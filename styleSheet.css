@@ -1,0 +1,26 @@
+:root {
+    --background-color: #ddd;
+    --point-color: #ffb6c1;
+}
+
+body {
+    background-color: var(--background-color);
+    font-family: Arial, Helvetica, sans-serif;
+    margin: 0;
+}
+
+header {
+    display: flex;
+    align-items: center;
+    width: 100%;
+    justify-content: space-around;
+    background-color: var(--point-color);
+    margin: 0;
+    padding: 6px 12px;
+    height: 3rem;
+    color: white;
+}
+
+main {
+    
+}
