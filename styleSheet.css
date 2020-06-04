@@ -1,5 +1,5 @@
 :root {
-    --background-color: #ddd;
+    --background-color: #eee;
     --point-color: #ffb6c1;
 }
 
@@ -19,8 +19,101 @@ header {
     padding: 6px 12px;
     height: 3rem;
     color: white;
+    font-size: 1.5rem;
+    font-weight: 600;
+    letter-spacing: 0.2rem;
 }
 
 main {
-    
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    width: 100%;
+    margin-top: 24px;
+}
+
+.customerList {
+    width: 90%;
+    background-color: white;
+    border: 1px solid var(--point-color);
+    border-radius: 12px;
+    margin-bottom: 2rem;
+    overflow: hidden;
+}
+
+.list_title {
+    background-color: var(--point-color);
+    height: 2rem;
+    padding: 6px 12px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    color: white;
+    font-weight: 600;
+}
+
+.list_name {
+    display: flex;
+    list-style: none;
+}
+
+.list_name li {
+    margin-right: 0.6rem;
+}
+
+.list_name li a {
+    text-decoration: none;
+    color: black;
+}
+
+.container {
+    width: 800px;
+    background-color: white;
+    border: 1px solid var(--point-color);
+    border-radius: 12px;
+    overflow: hidden;
+}
+
+.title {
+    background-color: var(--point-color);
+    padding: 6px 12px;
+    color: white;
+    height: 2.5rem;
+    width: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.5rem;
+    font-weight: 600;
+}
+
+.dataCard {
+    padding: 6px 12px;
+    margin: 0;
+    border-bottom: 1px solid var(--point-color);
+    display: flex;
+}
+
+.dataCard:last-child {
+    border-bottom: none;
+}
+
+.name {
+    width: 10%;
+    margin-top: 1rem;
+    display: flex;
+    justify-content: center;
+    font-weight: 600;
+}
+
+.info {
+    width: 90%;
+}
+
+.info li {
+    margin-bottom: 0.6rem;
+}
+
+.info li:last-child {
+    margin-bottom: 0;
 }
