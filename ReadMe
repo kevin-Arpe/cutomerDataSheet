@@ -1,0 +1,5 @@
+This, Customer InfoData Card App, project was made with node.js.
+
+2020/06/10
+Use 'fs.readFile' for reading customer data file.
+USe 'fs.readdir' and read customer name for making customer list.
