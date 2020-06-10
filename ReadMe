@@ -1,5 +1,7 @@
 This, Customer InfoData Card App, project was made with node.js.
 
+We cannot read styleSheet.css file using node.js yet. This problem would be handled soon.
+
 2020/06/10
 Use 'fs.readFile' for reading customer data file.
 USe 'fs.readdir' and read customer name for making customer list.
