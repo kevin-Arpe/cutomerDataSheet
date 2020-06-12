@@ -5,3 +5,8 @@ We cannot read styleSheet.css file using node.js yet. This problem would be hand
 2020/06/10
 Use 'fs.readFile' for reading customer data file.
 USe 'fs.readdir' and read customer name for making customer list.
+
+2020/06/12
+Use 'fs.rename' and fread queryString value, we can add new customer data and edit some data.
+Use 'fs.unlink', we can remove any selected customer data.
+Make home button for going main home.

@@ -40,10 +40,17 @@ const templateHTML = (nameList, dataCardSet, update) => {
         <meta charset="UTF-8">
         <meta name="viewport" content="width=device-width, initial-scale=1.0">
         <title>Cutomer DataSheet</title>
+        <script>
+            const dateBox = document.querySelector('.date');
+            let date = new Date();
+            let today = date.getFullYear() + '-' + date.getMonth() + '-' + date.getDate();
+            date.innerText = today;
+        </script>
     </head>
     <body>
         <header>
             <div class="date">2020.06.04 Thurs</div>
+            <a href="/">Home</a>
         </header>
         <main>
             <form action="/create_process" method="post" style="display: flex; flex-direction: column; width: 600px;">
@@ -75,18 +82,18 @@ const app = http.createServer((request, response) => {
     
     if (pathname === '/') {
         pathname = '/index.html';
-        fs.readdir('./data', (error, name) => {
+        fs.readdir('./data', (err, name) => {
             let nameList = makeNameList(name);
             let dataCardSet = makeDataCardSet(name);
             let template = templateHTML(nameList, dataCardSet, '');
 
-            response.writeHead(200, {"Content-Type": "text/html"});
+            response.writeHead(200, {"Contdent-Type": "text/html"});
             response.end(template);
         });
     }
 
     else if (pathname == '/update') {
-        fs.readdir('./data', (error, name) => {
+        fs.readdir('./data', (err, namde) => {
             let id = queryData.id;
 
             fs.readFile(`data/${id}`, 'utf8', (err, data) => {
@@ -98,6 +105,10 @@ const app = http.createServer((request, response) => {
                     <input type="text" name="name" placeholder="customer name" value="${id}">
                     <textarea name="info" placeholder="customer data">${data}</textarea>
                     <input type="submit">
+                </form>
+                <form action="/delete_process" method="post">
+                    <input type="hidden" name="id" value="${id}">
+                    <input type="submit" value="delete">
                 </form>
                 `);
 
@@ -138,6 +149,22 @@ const app = http.createServer((request, response) => {
             let info = post.info;
 
             fs.writeFile(`data/${name}`, info, 'utf8', (err) => {
+                response.writeHead(302, {Location : '/'});
+                response.end();
+            });
+        });
+    }
+
+    else if (pathname === '/delete_process') {
+        let body = '';
+        request.on('data', (data) => {
+            body = body + data;
+        });
+        request.on('end', () => {
+            let post = qs.parse(body);
+            let id = post.id;
+
+            fs.unlink(`data/${id}`, (err) => {
                 response.writeHead(302, {Location : '/'});
                 response.end();
             });
