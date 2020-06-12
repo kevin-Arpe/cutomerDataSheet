@@ -1,5 +1,7 @@
 const http = require('http');
 const fs = require('fs');
+const url = require('url');
+const qs = require('querystring');
 
 const makeNameList = (name) => {
     let nameList = '';
@@ -17,7 +19,7 @@ const makeDataCardSet = (name) => {
         let dataSet = fs.readFileSync(`./data/${name}`, 'utf8').split(',');
         dataCardSet = dataCardSet + `
             <div class="dataCard" id="${name}">
-                <span class="name">${name}</span>
+                <span class="name"><a href="/update?id=${name}">${name}</a></span>
                 <ul class="info">
                     <li class="birth">생년월일 : <span>${dataSet[0]}</span></li>
                     <li class="email">E-mail : <a href="${dataSet[1]}">${dataSet[1]}</a></li>
@@ -30,7 +32,7 @@ const makeDataCardSet = (name) => {
     return dataCardSet;
 }
 
-const templateHTML = (nameList, dataCardSet) => {
+const templateHTML = (nameList, dataCardSet, update) => {
     return `
     <!DOCTYPE html>
     <html lang="en">
@@ -44,6 +46,12 @@ const templateHTML = (nameList, dataCardSet) => {
             <div class="date">2020.06.04 Thurs</div>
         </header>
         <main>
+            <form action="/create_process" method="post" style="display: flex; flex-direction: column; width: 600px;">
+                <input type="text" name="name" placeholder="customer name">
+                <textarea name="info" placeholder="customer data"></textarea>
+                <input type="submit">
+            </form>
+            ${update}
             <div class="customerList">
                 <div class="list_title">고객 리스트</div>
                 <ul class="list_name" style="display: flex;">
@@ -62,16 +70,77 @@ const templateHTML = (nameList, dataCardSet) => {
 
 const app = http.createServer((request, response) => {
     let _url = request.url;
+    let pathname = url.parse(_url, true).pathname;
+    let queryData = url.parse(_url, true).query;
     
-    if (_url == '/') {
-        _url = '/index.html';
+    if (pathname === '/') {
+        pathname = '/index.html';
         fs.readdir('./data', (error, name) => {
             let nameList = makeNameList(name);
             let dataCardSet = makeDataCardSet(name);
-            let template = templateHTML(nameList, dataCardSet);
+            let template = templateHTML(nameList, dataCardSet, '');
 
             response.writeHead(200, {"Content-Type": "text/html"});
             response.end(template);
+        });
+    }
+
+    else if (pathname == '/update') {
+        fs.readdir('./data', (error, name) => {
+            let id = queryData.id;
+
+            fs.readFile(`data/${id}`, 'utf8', (err, data) => {
+                let nameList = makeNameList(name);
+                let dataCardSet = makeDataCardSet(name);
+                let template = templateHTML(nameList, dataCardSet, `
+                <form action="/update_process" method="post" style="display: flex; flex-direction: column; width: 600px;">
+                    <input type="hidden" name="id" value="${id}">
+                    <input type="text" name="name" placeholder="customer name" value="${id}">
+                    <textarea name="info" placeholder="customer data">${data}</textarea>
+                    <input type="submit">
+                </form>
+                `);
+
+                response.writeHead(200, {"Content-Type": "text/html"});
+                response.end(template);
+            });
+        });
+    }
+
+    else if (pathname === '/update_process') {
+        let body = '';
+        request.on('data', (data) => {
+            body = body + data;
+        });
+        request.on('end', () => {
+            let post = qs.parse(body);
+            let name = post.name;
+            let info = post.info;
+            let id = post.id;
+
+            fs.rename(`data/${id}`, `data/${name}`, (err) => {
+                fs.writeFile(`data/${name}`, info, 'utf8', (err) => {
+                    response.writeHead(302, {Location : '/'});
+                    response.end();
+                });
+            });
+        });
+    }
+
+    else if (pathname === '/create_process') {
+        let body = '';
+        request.on('data', (data) => {
+            body = body + data;
+        });
+        request.on('end', () => {
+            let post = qs.parse(body);
+            let name = post.name;
+            let info = post.info;
+
+            fs.writeFile(`data/${name}`, info, 'utf8', (err) => {
+                response.writeHead(302, {Location : '/'});
+                response.end();
+            });
         });
     }
 
