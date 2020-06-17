@@ -10,3 +10,7 @@ USe 'fs.readdir' and read customer name for making customer list.
 Use 'fs.rename' and fread queryString value, we can add new customer data and edit some data.
 Use 'fs.unlink', we can remove any selected customer data.
 Make home button for going main home.
+
+2020/06/17
+Refactoring and modulization for making code line to simple.
+Add makecard.js and template.js, with changing info.js to app.js for code Refactoring.

@@ -2,6 +2,8 @@ const http = require('http');
 const fs = require('fs');
 const url = require('url');
 const qs = require('querystring');
+const path = require('path');
+const sanitizeHtml = require('sanitize-html');
 
 const templateFunc = require('./template.js');
 const makeDataCardSet = require('./makecard.js')
@@ -24,21 +26,22 @@ const app = http.createServer((request, response) => {
     }
 
     else if (pathname == '/update') {
-        fs.readdir('./data', (err, namde) => {
+        fs.readdir('./data', (err, name) => {
             let id = queryData.id;
+            let filteredId = path.parse(id).base;
 
-            fs.readFile(`data/${id}`, 'utf8', (err, data) => {
+            fs.readFile(`data/${filteredId}`, 'utf8', (err, data) => {
                 let nameList = templateFunc.list(name);
                 let dataCardSet = makeDataCardSet(name);
                 let template = templateFunc.html(nameList, dataCardSet, `
                 <form action="/update_process" method="post" style="display: flex; flex-direction: column; width: 600px;">
-                    <input type="hidden" name="id" value="${id}">
-                    <input type="text" name="name" placeholder="customer name" value="${id}">
+                    <input type="hidden" name="id" value="${filteredId}">
+                    <input type="text" name="name" placeholder="customer name" value="${filteredId}">
                     <textarea name="info" placeholder="customer data">${data}</textarea>
                     <input type="submit">
                 </form>
                 <form action="/delete_process" method="post">
-                    <input type="hidden" name="id" value="${id}">
+                    <input type="hidden" name="id" value="${filteredId}">
                     <input type="submit" value="delete">
                 </form>
                 `);
@@ -60,8 +63,11 @@ const app = http.createServer((request, response) => {
             let info = post.info;
             let id = post.id;
 
-            fs.rename(`data/${id}`, `data/${name}`, (err) => {
-                fs.writeFile(`data/${name}`, info, 'utf8', (err) => {
+            const sanitizedName = sanitizeHtml(name);
+            const sanitizedInfo = sanitizeHtml(info);
+
+            fs.rename(`data/${id}`, `data/${sanitizedName}`, (err) => {
+                fs.writeFile(`data/${sanitizedName}`, sanitizedInfo, 'utf8', (err) => {
                     response.writeHead(302, {Location : '/'});
                     response.end();
                 });
@@ -79,7 +85,10 @@ const app = http.createServer((request, response) => {
             let name = post.name;
             let info = post.info;
 
-            fs.writeFile(`data/${name}`, info, 'utf8', (err) => {
+            const sanitizedName = sanitizeHtml(name);
+            const sanitizedInfo = sanitizeHtml(info, {allowedTags: ['h1']});
+
+            fs.writeFile(`data/${sanitizedName}`, sanitizedInfo, 'utf8', (err) => {
                 response.writeHead(302, {Location : '/'});
                 response.end();
             });
