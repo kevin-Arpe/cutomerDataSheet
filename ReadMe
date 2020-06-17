@@ -14,3 +14,6 @@ Make home button for going main home.
 2020/06/17
 Refactoring and modulization for making code line to simple.
 Add makecard.js and template.js, with changing info.js to app.js for code Refactoring.
+
+Install sanitize-html for preventing XSS, but allow h1 Tag for test.
+Test value name = "메렁".
