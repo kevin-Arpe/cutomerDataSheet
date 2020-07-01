@@ -20,6 +20,24 @@ const app = http.createServer((request, response) => {
     
     if (pathname === '/') {
         pathname = '/index.html';
+        db.query('SELECT * FROM customer', (err, customers) => {
+            let nameList = templateList(customers);
+            let dataCardSet = makeDataCardSet(customers);
+            let template = templateHTML(nameList, dataCardSet, '');
+
+            response.writeHead(200);
+            response.end(template);
+
+            /*
+            let nameList = templateList(name);
+            let dataCardSet = makeDataCardSet(name);
+            let template = templateHTML(nameList, dataCardSet, '');
+
+            response.writeHead(200, {"Cotdent-Type": "text/html"});
+            response.end(template);
+            */
+        });
+        /*
         fs.readdir('./data', (err, name) => {
             let nameList = templateList(name);
             let dataCardSet = makeDataCardSet(name);
@@ -28,6 +46,7 @@ const app = http.createServer((request, response) => {
             response.writeHead(200, {"Contdent-Type": "text/html"});
             response.end(template);
         });
+        */
     }
 
     else if (pathname == '/update') {
