@@ -4,9 +4,14 @@ const url = require('url');
 const qs = require('querystring');
 const path = require('path');
 const sanitizeHtml = require('sanitize-html');
+const db = require('./lib/db.js');
 
-const templateFunc = require('./template.js');
-const makeDataCardSet = require('./makecard.js')
+const template = require('./lib/template.js');
+const templateHTML = template.html;
+const templateList = template.list;
+const makeDataCardSet = require('./lib/makecard.js')
+
+db.connect();
 
 const app = http.createServer((request, response) => {
     let _url = request.url;
@@ -16,9 +21,9 @@ const app = http.createServer((request, response) => {
     if (pathname === '/') {
         pathname = '/index.html';
         fs.readdir('./data', (err, name) => {
-            let nameList = templateFunc.list(name);
+            let nameList = templateList(name);
             let dataCardSet = makeDataCardSet(name);
-            let template = templateFunc.html(nameList, dataCardSet, '');
+            let template = templateHTML(nameList, dataCardSet, '');
 
             response.writeHead(200, {"Contdent-Type": "text/html"});
             response.end(template);
@@ -31,9 +36,9 @@ const app = http.createServer((request, response) => {
             let filteredId = path.parse(id).base;
 
             fs.readFile(`data/${filteredId}`, 'utf8', (err, data) => {
-                let nameList = templateFunc.list(name);
+                let nameList = templateList(name);
                 let dataCardSet = makeDataCardSet(name);
-                let template = templateFunc.html(nameList, dataCardSet, `
+                let template = templateHTML(nameList, dataCardSet, `
                 <form action="/update_process" method="post" style="display: flex; flex-direction: column; width: 600px;">
                     <input type="hidden" name="id" value="${filteredId}">
                     <input type="text" name="name" placeholder="customer name" value="${filteredId}">

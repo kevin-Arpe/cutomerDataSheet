@@ -17,6 +17,8 @@
   },
   "homepage": "https://github.com/kevin-Arpe/cutomerDataSheet#readme",
   "dependencies": {
-    "sanitize-html": "^1.26.0"
+    "mysql": "^2.18.1",
+    "sanitize-html": "^1.26.0",
+    "sql": "^0.78.0"
   }
 }
