@@ -5,6 +5,7 @@ const qs = require('querystring');
 const path = require('path');
 const sanitizeHtml = require('sanitize-html');
 const db = require('./lib/db.js');
+const topic = require('./lib/topic.js');
 
 const template = require('./lib/template.js');
 const templateHTML = template.html;
@@ -19,120 +20,21 @@ const app = http.createServer((request, response) => {
     let queryData = url.parse(_url, true).query;
     
     if (pathname === '/') {
-        pathname = '/index.html';
-        db.query('SELECT * FROM customer', (err, customers) => {
-            let nameList = templateList(customers);
-            let dataCardSet = makeDataCardSet(customers);
-            let template = templateHTML(nameList, dataCardSet, '');
-
-            response.writeHead(200);
-            response.end(template);
-
-            /*
-            let nameList = templateList(name);
-            let dataCardSet = makeDataCardSet(name);
-            let template = templateHTML(nameList, dataCardSet, '');
-
-            response.writeHead(200, {"Cotdent-Type": "text/html"});
-            response.end(template);
-            */
-        });
-        /*
-        fs.readdir('./data', (err, name) => {
-            let nameList = templateList(name);
-            let dataCardSet = makeDataCardSet(name);
-            let template = templateHTML(nameList, dataCardSet, '');
-
-            response.writeHead(200, {"Contdent-Type": "text/html"});
-            response.end(template);
-        });
-        */
+        topic.home(request, response);
     }
-
     else if (pathname == '/update') {
-        fs.readdir('./data', (err, name) => {
-            let id = queryData.id;
-            let filteredId = path.parse(id).base;
-
-            fs.readFile(`data/${filteredId}`, 'utf8', (err, data) => {
-                let nameList = templateList(name);
-                let dataCardSet = makeDataCardSet(name);
-                let template = templateHTML(nameList, dataCardSet, `
-                <form action="/update_process" method="post" style="display: flex; flex-direction: column; width: 600px;">
-                    <input type="hidden" name="id" value="${filteredId}">
-                    <input type="text" name="name" placeholder="customer name" value="${filteredId}">
-                    <textarea name="info" placeholder="customer data">${data}</textarea>
-                    <input type="submit">
-                </form>
-                <form action="/delete_process" method="post">
-                    <input type="hidden" name="id" value="${filteredId}">
-                    <input type="submit" value="delete">
-                </form>
-                `);
-
-                response.writeHead(200, {"Content-Type": "text/html"});
-                response.end(template);
-            });
-        });
+        topic.update(request, response, queryData);
     }
-
     else if (pathname === '/update_process') {
-        let body = '';
-        request.on('data', (data) => {
-            body = body + data;
-        });
-        request.on('end', () => {
-            let post = qs.parse(body);
-            let name = post.name;
-            let info = post.info;
-            let id = post.id;
-
-            const sanitizedName = sanitizeHtml(name);
-            const sanitizedInfo = sanitizeHtml(info);
-
-            fs.rename(`data/${id}`, `data/${sanitizedName}`, (err) => {
-                fs.writeFile(`data/${sanitizedName}`, sanitizedInfo, 'utf8', (err) => {
-                    response.writeHead(302, {Location : '/'});
-                    response.end();
-                });
-            });
-        });
+        topic.update_process(request, response);
     }
 
     else if (pathname === '/create_process') {
-        let body = '';
-        request.on('data', (data) => {
-            body = body + data;
-        });
-        request.on('end', () => {
-            let post = qs.parse(body);
-            let name = post.name;
-            let info = post.info;
-
-            const sanitizedName = sanitizeHtml(name);
-            const sanitizedInfo = sanitizeHtml(info, {allowedTags: ['h1']});
-
-            fs.writeFile(`data/${sanitizedName}`, sanitizedInfo, 'utf8', (err) => {
-                response.writeHead(302, {Location : '/'});
-                response.end();
-            });
-        });
+        topic.create_process(request, response);
     }
 
     else if (pathname === '/delete_process') {
-        let body = '';
-        request.on('data', (data) => {
-            body = body + data;
-        });
-        request.on('end', () => {
-            let post = qs.parse(body);
-            let id = post.id;
-
-            fs.unlink(`data/${id}`, (err) => {
-                response.writeHead(302, {Location : '/'});
-                response.end();
-            });
-        });
+        topic.delete_process(request, response);
     }
 
     else {
