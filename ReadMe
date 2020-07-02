@@ -17,3 +17,8 @@ Add makecard.js and template.js, with changing info.js to app.js for code Refact
 
 Install sanitize-html for preventing XSS, but allow h1 Tag for test.
 Test value name = "메렁".
+
+2020/07/01,02
+Connect with MySQL local database and get data.
+Add CRUD funciton in "topic" javascript file.
+Now, we can create, read, update and delete customer data from database.
